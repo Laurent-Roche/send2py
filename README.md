@@ -7,5 +7,6 @@ This uses Python and NumPy's C-APIs and Fortran's C-binding abilities to be able
 
 This is a fpm package, which can be built using standard fpm commands. You will however probably need to tell fpm where to find Python and NumPy headers. Both provide a way to get the required compiler / linker flags, through python3-config and numpy-config. The following should work (on Linux) to build and run the program:
 
-$ fpm run --c-flag "$(python3-config --cflags) $(numpy-config --cflags)" --link-flag "$(python3-config --ldflags)"
-
+```bash
+fpm run --c-flag "$(python3-config --cflags) $(numpy-config --cflags)" --link-flag "$(python3-config --ldflags)"
+```
