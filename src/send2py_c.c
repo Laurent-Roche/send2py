@@ -1,36 +1,49 @@
 // Functions to call the Python interpreter.
 
-#include <stdio.h>
-
-#include <Python.h>
-#include <numpy/arrayobject.h>
+#include "send2py_c.h"
 
 
 
-// Calls the Python interpreter with the passed Fortran variables.
-void plt_plot(char* path, double x[], double y[], int n) {
-    printf("C       %p %p\n", x, y);
-    // Initialize the interpreter.
+// locals and globals in Python. Need to be global variables because otherwise
+// we would need to pass them to each function call, which would require to
+// interface the type in Fortran.
+PyObject* locals = NULL;
+PyObject* globals = NULL;
+
+
+
+// Starts the Python interpreter.
+int start_python() {
     Py_Initialize();
     import_array();
-    PyObject* locals = PyDict_New();
-    PyObject* globals = PyDict_New();
-    // Create the variables.
-    npy_intp dims[1] = {n};
-    PyObject* npy_x = PyArray_SimpleNewFromData(1, dims, NPY_DOUBLE, x);
-    PyObject* npy_y = PyArray_SimpleNewFromData(1, dims, NPY_DOUBLE, y);
-    PyDict_SetItemString(locals, "x", npy_x);
-    PyDict_SetItemString(locals, "y", npy_y);
-    // Open the file and check if it is found.
-    FILE* script = fopen(path, "r");
-    if (!script) {
-        printf("Error: file %s not found\n", path);
-        PyErr_Print();
-        Py_Finalize();
-        return;
-    }
-    // Run and exit.
-    PyRun_FileExFlags(script, path, Py_file_input, globals, locals, 1, NULL);
+    locals = PyDict_New();
+    globals = PyDict_New();
+    return 0;
+}
+
+// Ends the Python interpreter.
+int end_python() {
+    CHECK_PY_INIT();
     PyErr_Print();
     Py_Finalize();
+    return 0;
+}
+
+// Sends the given double array to Python as a global numpy array, with the
+// given name.
+int send_to_python(double x[], size_t n, char* name_py) {
+    CHECK_PY_INIT();
+    npy_intp dims[1] = {n};
+    PyObject* npy_x = PyArray_SimpleNewFromData(1, dims, NPY_DOUBLE, x);
+    PyDict_SetItemString(locals, name_py, npy_x);
+}
+
+// Executes the given file.
+int run_file(char* path) {
+    CHECK_PY_INIT();
+    // Open the file and check if it is found.
+    FILE* script = fopen(path, "r");
+    CHECK_FILE_OPENED(script);
+    // Run.
+    PyRun_FileExFlags(script, path, Py_file_input, globals, locals, 1, NULL);
 }

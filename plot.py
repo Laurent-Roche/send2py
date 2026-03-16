@@ -4,6 +4,7 @@ import time
 
 
 
-print(f"Python  {hex(x.ctypes.data)} {hex(y.ctypes.data)}")
+global x, y
+
 plt.plot(x, y)
 plt.show()
