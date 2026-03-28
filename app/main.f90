@@ -3,7 +3,7 @@
 program main
     use iso_c_binding, only: c_char, c_int
     use stdlib_constants, only: PI_dp
-    use stdlib_kinds, only: dp
+    use stdlib_kinds, only: sp, dp, int8
     use stdlib_math, only: linspace
     
     use send2py
@@ -13,15 +13,16 @@ program main
     character(len=7, kind=c_char), parameter :: &
                                 path = c_char_"plot.py"
     integer(kind=c_int), parameter :: N = 100000
-    real(kind=dp), allocatable :: x(:), y(:)
+    real(kind=sp), allocatable :: x(:)
+    integer(kind=int8), allocatable :: y(:)
     
     allocate(x(N), y(N))
     x = linspace(0.0_dp, 6*PI_dp, N)
-    y = sin(x)
+    y = int(256 * sin(x), kind=int8)
     
     call start_python()
-    call send_to_python(x, n, "x")
-    call send_to_python(y, n, "y")
+    call send_array(x, "x")
+    call send_array(y, "y")
     call run_file(path)
     call end_python()
     

@@ -1,10 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import time
 
 
 
 global x, y
 
+print(x.dtype, y.dtype)
 plt.plot(x, y)
 plt.show()
