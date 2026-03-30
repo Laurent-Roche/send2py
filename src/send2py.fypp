@@ -30,7 +30,7 @@ module send2py
     
     interface
         function send_array_int8(arr, n, name_py) &
-                                bind(c, name="send_array_int8") result(error)
+                            bind(c, name="send_array_int8") result(error)
             use iso_c_binding, only: c_char, c_int8_t, c_size_t, c_int
             integer(c_int8_t), intent(in) :: arr(n)
             integer(c_size_t), intent(in), value :: n
@@ -38,10 +38,9 @@ module send2py
             integer(c_int) :: error
         end function send_array_int8
     end interface
-    
     interface
         function send_array_int16(arr, n, name_py) &
-                                bind(c, name="send_array_int16") result(error)
+                            bind(c, name="send_array_int16") result(error)
             use iso_c_binding, only: c_char, c_int16_t, c_size_t, c_int
             integer(c_int16_t), intent(in) :: arr(n)
             integer(c_size_t), intent(in), value :: n
@@ -49,10 +48,9 @@ module send2py
             integer(c_int) :: error
         end function send_array_int16
     end interface
-    
     interface
         function send_array_int32(arr, n, name_py) &
-                                bind(c, name="send_array_int32") result(error)
+                            bind(c, name="send_array_int32") result(error)
             use iso_c_binding, only: c_char, c_int32_t, c_size_t, c_int
             integer(c_int32_t), intent(in) :: arr(n)
             integer(c_size_t), intent(in), value :: n
@@ -60,10 +58,9 @@ module send2py
             integer(c_int) :: error
         end function send_array_int32
     end interface
-    
     interface
         function send_array_int64(arr, n, name_py) &
-                                bind(c, name="send_array_int64") result(error)
+                            bind(c, name="send_array_int64") result(error)
             use iso_c_binding, only: c_char, c_int64_t, c_size_t, c_int
             integer(c_int64_t), intent(in) :: arr(n)
             integer(c_size_t), intent(in), value :: n
@@ -71,10 +68,9 @@ module send2py
             integer(c_int) :: error
         end function send_array_int64
     end interface
-    
     interface
         function send_array_float(arr, n, name_py) &
-                                bind(c, name="send_array_float") result(error)
+                            bind(c, name="send_array_float") result(error)
             use iso_c_binding, only: c_char, c_float, c_size_t, c_int
             real(c_float), intent(in) :: arr(n)
             integer(c_size_t), intent(in), value :: n
@@ -82,10 +78,9 @@ module send2py
             integer(c_int) :: error
         end function send_array_float
     end interface
-    
-    interface        
+    interface
         function send_array_double(arr, n, name_py) &
-                                bind(c, name="send_array_double") result(error)
+                            bind(c, name="send_array_double") result(error)
             use iso_c_binding, only: c_char, c_double, c_size_t, c_int
             real(c_double), intent(in) :: arr(n)
             integer(c_size_t), intent(in), value :: n
@@ -147,7 +142,6 @@ contains
 
 
     ! send_array_xxx() wrappers to add array size in call and c_null_char.
-
     subroutine send_array_int8_f(arr, name_py)
         integer(c_int8_t), intent(in) :: arr(:)
         character(len=*, kind=c_char), intent(in) :: name_py
@@ -159,7 +153,6 @@ contains
         error = send_array_int8(arr, n, append_end_of_string(name_py))
         call check_error(error)
     end subroutine send_array_int8_f
-
     subroutine send_array_int16_f(arr, name_py)
         integer(c_int16_t), intent(in) :: arr(:)
         character(len=*, kind=c_char), intent(in) :: name_py
@@ -171,7 +164,6 @@ contains
         error = send_array_int16(arr, n, append_end_of_string(name_py))
         call check_error(error)
     end subroutine send_array_int16_f
-
     subroutine send_array_int32_f(arr, name_py)
         integer(c_int32_t), intent(in) :: arr(:)
         character(len=*, kind=c_char), intent(in) :: name_py
@@ -183,7 +175,6 @@ contains
         error = send_array_int32(arr, n, append_end_of_string(name_py))
         call check_error(error)
     end subroutine send_array_int32_f
-
     subroutine send_array_int64_f(arr, name_py)
         integer(c_int64_t), intent(in) :: arr(:)
         character(len=*, kind=c_char), intent(in) :: name_py
@@ -195,7 +186,6 @@ contains
         error = send_array_int64(arr, n, append_end_of_string(name_py))
         call check_error(error)
     end subroutine send_array_int64_f
-
     subroutine send_array_float_f(arr, name_py)
         real(c_float), intent(in) :: arr(:)
         character(len=*, kind=c_char), intent(in) :: name_py
@@ -207,7 +197,6 @@ contains
         error = send_array_float(arr, n, append_end_of_string(name_py))
         call check_error(error)
     end subroutine send_array_float_f
-    
     subroutine send_array_double_f(arr, name_py)
         real(c_double), intent(in) :: arr(:)
         character(len=*, kind=c_char), intent(in) :: name_py

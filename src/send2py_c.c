@@ -31,57 +31,19 @@ int end_python() {
     return 0;
 }
 
-
-
-// send_array()
+//send_array_xxx() defined through a macro to avoid heavy copy-pasting.
 
 // Sends the given array to Python as a global numpy array, with the given name.
-int send_array_int8(int8_t x[], size_t n, char* name_py) {
-    CHECK_PY_INIT();
-    npy_intp dims[1] = {n};
-    PyObject* npy_x = PyArray_SimpleNewFromData(1, dims, NPY_INT8, x);
-    PyDict_SetItemString(globals, name_py, npy_x);
-}
-
-// Sends the given array to Python as a global numpy array, with the given name.
-int send_array_int16(int16_t x[], size_t n, char* name_py) {
-    CHECK_PY_INIT();
-    npy_intp dims[1] = {n};
-    PyObject* npy_x = PyArray_SimpleNewFromData(1, dims, NPY_INT16, x);
-    PyDict_SetItemString(globals, name_py, npy_x);
-}
-
-// Sends the given array to Python as a global numpy array, with the given name.
-int send_array_int32(int32_t x[], size_t n, char* name_py) {
-    CHECK_PY_INIT();
-    npy_intp dims[1] = {n};
-    PyObject* npy_x = PyArray_SimpleNewFromData(1, dims, NPY_INT32, x);
-    PyDict_SetItemString(globals, name_py, npy_x);
-}
-
-// Sends the given array to Python as a global numpy array, with the given name.
-int send_array_int64(int64_t x[], size_t n, char* name_py) {
-    CHECK_PY_INIT();
-    npy_intp dims[1] = {n};
-    PyObject* npy_x = PyArray_SimpleNewFromData(1, dims, NPY_INT64, x);
-    PyDict_SetItemString(globals, name_py, npy_x);
-}
-
-// Sends the given array to Python as a global numpy array, with the given name.
-int send_array_float(float x[], size_t n, char* name_py) {
-    CHECK_PY_INIT();
-    npy_intp dims[1] = {n};
-    PyObject* npy_x = PyArray_SimpleNewFromData(1, dims, NPY_FLOAT, x);
-    PyDict_SetItemString(globals, name_py, npy_x);
-}
-
-// Sends the given array to Python as a global numpy array, with the given name.
-int send_array_double(double x[], size_t n, char* name_py) {
-    CHECK_PY_INIT();
-    npy_intp dims[1] = {n};
-    PyObject* npy_x = PyArray_SimpleNewFromData(1, dims, NPY_DOUBLE, x);
-    PyDict_SetItemString(globals, name_py, npy_x);
-}
+DEFINE_SEND_ARRAY(send_array_int8, int8_t, NPY_INT8)
+DEFINE_SEND_ARRAY(send_array_int16, int16_t, NPY_INT16)
+DEFINE_SEND_ARRAY(send_array_int32, int32_t, NPY_INT32)
+DEFINE_SEND_ARRAY(send_array_int64, int64_t, NPY_INT64)
+DEFINE_SEND_ARRAY(send_array_uint8, uint8_t, NPY_UINT8)
+DEFINE_SEND_ARRAY(send_array_uint16, uint16_t, NPY_UINT16)
+DEFINE_SEND_ARRAY(send_array_uint32, uint32_t, NPY_UINT32)
+DEFINE_SEND_ARRAY(send_array_uint64, uint64_t, NPY_UINT64)
+DEFINE_SEND_ARRAY(send_array_float, float, NPY_FLOAT)
+DEFINE_SEND_ARRAY(send_array_double, double, NPY_DOUBLE)
 
 // Executes the given file.
 int run_file(char* path) {

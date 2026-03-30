@@ -29,6 +29,15 @@
     }                                               \
 }
 
+// Macro to define send_array_xxx() with each type.
+#define DEFINE_SEND_ARRAY(NAME, C_TYPE, NPY_TYPE)                       \
+int NAME(C_TYPE x[], size_t n, char* name_py) {                         \
+    CHECK_PY_INIT();                                                    \
+    npy_intp dims[1] = {n};                                             \
+    PyObject* npy_x = PyArray_SimpleNewFromData(1, dims, NPY_TYPE, x);  \
+    PyDict_SetItemString(globals, name_py, npy_x);                      \
+}
+
 
 
 // Starts the Python interpreter.
@@ -39,20 +48,14 @@ int end_python();
 
 // Sends the given array to Python as a global numpy array, with the given name.
 int send_array_int8(int8_t x[], size_t n, char* name_py);
-
-// Sends the given array to Python as a global numpy array, with the given name.
 int send_array_int16(int16_t x[], size_t n, char* name_py);
-
-// Sends the given array to Python as a global numpy array, with the given name.
 int send_array_int32(int32_t x[], size_t n, char* name_py);
-
-// Sends the given array to Python as a global numpy array, with the given name.
 int send_array_int64(int64_t x[], size_t n, char* name_py);
-
-// Sends the given array to Python as a global numpy array, with the given name.
+int send_array_uint8(uint8_t x[], size_t n, char* name_py);
+int send_array_uint16(uint16_t x[], size_t n, char* name_py);
+int send_array_uint32(uint32_t x[], size_t n, char* name_py);
+int send_array_uint64(uint64_t x[], size_t n, char* name_py);
 int send_array_float(float x[], size_t n, char* name_py);
-
-// Sends the given array to Python as a global numpy array, with the given name.
 int send_array_double(double x[], size_t n, char* name_py);
 
 // Executes the given file.
