@@ -33,7 +33,8 @@ module send2py
                     ("int32", "integer", "c_int32_t"), &
                     ("int64", "integer", "c_int64_t"), &
                     ("float", "real", "c_float"), &
-                    ("double", "real", "c_double")]
+                    ("double", "real", "c_double"), &
+                    ("bool", "logical", "c_bool")]
     #: for c_type, f_type, f_kind in types
     interface
         function send_array_${c_type}$(arr, n, name_py) &
@@ -48,9 +49,9 @@ module send2py
     #: endfor
     
     interface send_array
-        procedure :: send_array_float_f, send_array_double_f
-        procedure :: send_array_int8_f, send_array_int16_f, send_array_int32_f
-        procedure :: send_array_int64_f
+        #: for typename, _, _ in types
+        procedure :: send_array_${typename}$_f
+        #: endfor
     end interface
     
 contains
