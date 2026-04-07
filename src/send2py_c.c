@@ -31,7 +31,23 @@ int end_python() {
     return 0;
 }
 
-//send_array_xxx() defined through a macro to avoid heavy copy-pasting.
+// Sends the given int to Python as a global int, with the given name.
+DEFINE_SEND_INT(send_int8, int8_t)
+DEFINE_SEND_INT(send_int16, int16_t)
+DEFINE_SEND_INT(send_int32, int32_t)
+DEFINE_SEND_INT(send_int64, int64_t)
+
+// Sends the given float to Python as a global float, with the given name.
+DEFINE_SEND_REAL(send_float, float)
+DEFINE_SEND_REAL(send_double, double)
+
+// Sends the given bool to Python as a global bool, with the given name.
+int send_bool(bool* x, char* name_py) {
+    CHECK_PY_INIT();
+    // Python doesn't have C-bool --> py-bool conversion: do it manually.
+    PyObject* py_x = *x ? Py_True : Py_False;
+    return PyDict_SetItemString(globals, name_py, py_x);
+}
 
 // Sends the given array to Python as a global numpy array, with the given name.
 DEFINE_SEND_ARRAY(send_array_int8, int8_t, NPY_INT8)

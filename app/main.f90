@@ -3,7 +3,7 @@
 program main
     use iso_c_binding, only: c_char, c_int, c_bool
     use stdlib_constants, only: PI_dp
-    use stdlib_kinds, only: sp, dp, int8
+    use stdlib_kinds
     use stdlib_math, only: linspace
     
     use send2py
@@ -16,6 +16,7 @@ program main
     real(dp), allocatable :: x(:)
     integer(int8), allocatable :: y(:)
     logical(c_bool), allocatable :: mask(:)
+    logical(c_bool) :: k
     
     allocate(x(N), y(N), mask(N))
     x = linspace(0.0_dp, 6*PI_dp, N)
@@ -25,11 +26,13 @@ program main
     elsewhere
         mask = .false.
     end where
+    k = .true.
     
     call start_python()
     call send_array(x, "x")
     call send_array(y, "y")
     call send_array(mask, "mask")
+    call send_logical(k, "k")
     call run_file(path)
     call end_python()
     

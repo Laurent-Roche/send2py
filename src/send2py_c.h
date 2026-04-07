@@ -4,10 +4,12 @@
 
 
 #include <stdbool.h>
+#define PY_SSIZE_T_CLEAN
+#include <Python.h>
+
 #include <stdint.h>
 #include <stdio.h>
 
-#include <Python.h>
 #include <numpy/arrayobject.h>
 
 
@@ -30,6 +32,24 @@
     }                                               \
 }
 
+// Macro to define send_intxx() with each kind.
+#define DEFINE_SEND_INT(NAME, C_TYPE)                       \
+int NAME(C_TYPE* x, char* name_py) {                        \
+    CHECK_PY_INIT();                                        \
+    int64_t x_64 = (int64_t) *x;                            \
+    PyObject* py_x = PyLong_FromLong(x_64);                 \
+    return PyDict_SetItemString(globals, name_py, py_x);    \
+}
+
+// Macro to define send_intxx() with each kind.
+#define DEFINE_SEND_REAL(NAME, C_TYPE)                      \
+int NAME(C_TYPE* x, char* name_py) {                        \
+    CHECK_PY_INIT();                                        \
+    double x_64 = (double) *x;                              \
+    PyObject* py_x = PyFloat_FromDouble(x_64);              \
+    return PyDict_SetItemString(globals, name_py, py_x);    \
+}
+
 // Macro to define send_array_xxx() with each type.
 #define DEFINE_SEND_ARRAY(NAME, C_TYPE, NPY_TYPE)                       \
 int NAME(C_TYPE x[], size_t n, char* name_py) {                         \
@@ -46,6 +66,19 @@ int start_python();
 
 // Ends the Python interpreter.
 int end_python();
+
+// Sends the given int to Python as a global int, with the given name.
+int send_int8(int8_t* x, char* name_py);
+int send_int16(int16_t* x, char* name_py);
+int send_int32(int32_t* x, char* name_py);
+int send_int64(int64_t* x, char* name_py);
+
+// Sends the given float to Python as a global float, with the given name.
+int send_float(float* x, char* name_py);
+int send_double(double* x, char* name_py);
+
+// Sends the given bool to Python as a global bool, with the given name.
+int send_bool(bool* x, char* name_py);
 
 // Sends the given array to Python as a global numpy array, with the given name.
 int send_array_int8(int8_t x[], size_t n, char* name_py);
