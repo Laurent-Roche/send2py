@@ -25,11 +25,10 @@ module send2py
     end interface
     
     interface
-        function run_file_c(path) bind(c, name="run_file") result(error)
-            use iso_c_binding, only: c_char, c_int
+        subroutine run_file_c(path) bind(c, name="run_file")
+            use iso_c_binding, only: c_char
             character(c_char), intent(in) :: path(*)
-            integer(c_int) :: error
-        end function run_file_c
+        end subroutine run_file_c
     end interface
     
     interface
@@ -234,10 +233,7 @@ contains
     subroutine run_file(path)
         character(len=*, kind=c_char), intent(in) :: path
         
-        integer(c_int) :: error
-        
-        error = run_file_c(append_end_of_string(path))
-        call check_error(error)
+        call run_file_c(append_end_of_string(path))
     end subroutine run_file
 
 

@@ -32,6 +32,14 @@
     }                                               \
 }
 
+#define ERR_FILE_NOT_CLOSED 3
+#define CHECK_FILE_CLOSED(x) {                                \
+    if (x != 0) {                                             \
+        printf("Error: file %s not closed properly\n", path); \
+        return ERR_FILE_NOT_CLOSED;                           \
+    }                                                         \
+}
+
 // Macro to define send_intxx() with each kind.
 #define DEFINE_SEND_INT(NAME, C_TYPE)                       \
 int NAME(C_TYPE* x, char* name_py) {                        \
@@ -94,7 +102,7 @@ int send_array_double(double x[], size_t n, char* name_py);
 int send_array_bool(bool x[], size_t n, char* name_py);
 
 // Executes the given file.
-int run_file(char* path);
+void run_file(char* path);
 
 
 

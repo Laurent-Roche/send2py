@@ -63,12 +63,14 @@ DEFINE_SEND_ARRAY(send_array_double, double, NPY_DOUBLE)
 DEFINE_SEND_ARRAY(send_array_bool, bool, NPY_BOOL)
 
 // Executes the given file.
-int run_file(char* path) {
+void run_file(char* path) {
     CHECK_PY_INIT();
     // Open the file and check if it is found.
     FILE* script = fopen(path, "r");
     CHECK_FILE_OPENED(script);
     // Run.
-    return PyRun_FileExFlags(script, path, Py_file_input, globals, locals, 1,
-                              NULL);
+    PyRun_FileExFlags(script, path, Py_file_input, globals, locals, 0, NULL);
+    // Close the file.
+    int close = fclose(script);
+    CHECK_FILE_CLOSED(close);
 }
