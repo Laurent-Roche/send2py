@@ -5,7 +5,7 @@ module send2py
   
     private
     public :: start_python, end_python, send_integer, send_real, send_logical, &
-               send_array, run_file
+               send_bytes, send_str, send_variable, send_array, run_file
     
     ! Conversion between C types and Fortran type/kinds.
     #: set types = [("int8", "integer", "c_int8_t"), &
@@ -15,6 +15,7 @@ module send2py
                     ("float", "real", "c_float"), &
                     ("double", "real", "c_double"), &
                     ("bool", "logical", "c_bool")]
+    #: set char_types = ["bytes", "str"]
     
     ! C wrappers
     interface
@@ -67,7 +68,30 @@ module send2py
     end interface
     
     interface send_logical
-        procedure :: send_bool_f
+        procedure :: send_bool_f, send_bool_fkind_f
+    end interface
+    
+    #: for char_type in char_types
+    interface
+        function send_${char_type}$_c(x, name_py) &
+                                bind(c, name="send_${char_type}$") result(error)
+            use iso_c_binding, only: c_char, c_int
+            character(c_char), intent(in) :: x(*)
+            character(c_char), intent(in) :: name_py(*)
+            integer(c_int) :: error
+        end function send_${char_type}$_c
+    end interface
+    
+    interface send_${char_type}$
+        procedure :: send_${char_type}$_f
+    end interface
+    #: endfor
+    
+    interface send_variable
+        #: for typename, f_type, _ in types
+        procedure :: send_${typename}$_f
+        #: endfor
+        procedure :: send_bool_fkind_f, send_str_f
     end interface
     
     #: for c_type, f_type, f_kind in types
@@ -88,6 +112,8 @@ module send2py
         procedure :: send_array_${typename}$_f
         #: endfor
     end interface
+    
+    
     
 contains
 
@@ -145,6 +171,32 @@ contains
         error = send_${c_type}$(x, append_end_of_string(name_py))
         call check_error(error)
     end subroutine send_${c_type}$_f
+    #: endfor
+    
+    ! Converts default logical kind to c_bool to be able to send default 
+    ! logicals too, not only c_bool.
+    subroutine send_bool_fkind_f(x, name_py)
+        logical, intent(in) :: x
+        character(len=*, kind=c_char), intent(in) :: name_py
+        
+        integer(c_int) :: error
+
+        error = send_bool(logical(x, kind=c_bool), &
+                          append_end_of_string(name_py))
+        call check_error(error)
+    end subroutine send_bool_fkind_f
+    
+    #: for char_type in char_types
+    subroutine send_${char_type}$_f(x, name_py)
+        character(len=*, kind=c_char), intent(in) :: x
+        character(len=*, kind=c_char), intent(in) :: name_py
+        
+        integer(c_int) :: error
+
+        error = send_${char_type}$_c(append_end_of_string(x), &
+                                     append_end_of_string(name_py))
+        call check_error(error)
+    end subroutine send_${char_type}$_f
     #: endfor
 
     ! send_array_xxx() wrappers to add array size in call and c_null_char.

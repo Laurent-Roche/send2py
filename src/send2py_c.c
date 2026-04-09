@@ -49,6 +49,20 @@ int send_bool(bool* x, char* name_py) {
     return PyDict_SetItemString(globals, name_py, py_x);
 }
 
+// Sends the given string to Python as a global bytes, with the given name.
+int send_bytes(char* x, char* name_py) {
+    CHECK_PY_INIT();
+    PyObject* py_x = PyBytes_FromString(x);
+    return PyDict_SetItemString(globals, name_py, py_x);
+}
+
+// Sends the given string to Python as a global str, with the given name.
+int send_str(char* x, char* name_py) {
+    CHECK_PY_INIT();
+    PyObject* py_x = PyUnicode_FromString(x);
+    return PyDict_SetItemString(globals, name_py, py_x);
+}
+
 // Sends the given array to Python as a global numpy array, with the given name.
 DEFINE_SEND_ARRAY(send_array_int8, int8_t, NPY_INT8)
 DEFINE_SEND_ARRAY(send_array_int16, int16_t, NPY_INT16)

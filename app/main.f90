@@ -15,24 +15,17 @@ program main
     integer(c_int), parameter :: N = 100000
     real(dp), allocatable :: x(:)
     integer(int8), allocatable :: y(:)
-    logical(c_bool), allocatable :: mask(:)
-    logical(c_bool) :: k
     
-    allocate(x(N), y(N), mask(N))
-    x = linspace(0.0_dp, 6*PI_dp, N)
+    allocate(x(N), y(N))
+    x = linspace(0.0_dp, 4*PI_dp, N)
     y = int(256 * sin(x), kind=int8)
-    where (x <= 2 * PI_dp .or. x >= 4 * PI_dp)
-        mask = .true.
-    elsewhere
-        mask = .false.
-    end where
-    k = .true.
     
     call start_python()
     call send_array(x, "x")
     call send_array(y, "y")
-    call send_array(mask, "mask")
-    call send_logical(k, "k")
+    call send_variable("r", "color")
+    call send_variable(.true., "show_grid")
+    call send_variable("Integer overflow on a sine function", "title")
     call run_file(path)
     call end_python()
     

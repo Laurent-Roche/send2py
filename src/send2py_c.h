@@ -88,6 +88,12 @@ int send_double(double* x, char* name_py);
 // Sends the given bool to Python as a global bool, with the given name.
 int send_bool(bool* x, char* name_py);
 
+// Sends the given string to Python as a global bytes, with the given name.
+int send_bytes(char* x, char* name_py);
+
+// Sends the given string to Python as a global str, with the given name.
+int send_str(char* x, char* name_py);
+
 // Sends the given array to Python as a global numpy array, with the given name.
 int send_array_int8(int8_t x[], size_t n, char* name_py);
 int send_array_int16(int16_t x[], size_t n, char* name_py);

@@ -3,9 +3,9 @@ import matplotlib.pyplot as plt
 
 
 
-global x, y, mask, k
+global x, y, color, show_grid, title
 
-print(x.dtype, y.dtype, mask.dtype, type(k))
-print(k)
-plt.plot(x[mask], y[mask])
+plt.plot(x, y, color=color)
+plt.grid(show_grid)
+plt.title(title)
 plt.show()
