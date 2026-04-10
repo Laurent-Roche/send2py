@@ -59,12 +59,17 @@ int NAME(C_TYPE* x, char* name_py) {                        \
 }
 
 // Macro to define send_array_xxx() with each type.
-#define DEFINE_SEND_ARRAY(NAME, C_TYPE, NPY_TYPE)                       \
-int NAME(C_TYPE x[], size_t n, char* name_py) {                         \
-    CHECK_PY_INIT();                                                    \
-    npy_intp dims[1] = {n};                                             \
-    PyObject* npy_x = PyArray_SimpleNewFromData(1, dims, NPY_TYPE, x);  \
-    return PyDict_SetItemString(globals, name_py, npy_x);               \
+#define DEFINE_SEND_ARRAY(NAME, C_TYPE, NPY_TYPE)               \
+int NAME(C_TYPE* x, int64_t shape[], int rank, char* name_py) { \
+    CHECK_PY_INIT();                                            \
+    npy_intp dims[rank];                                        \
+    for (int i = 0; i < rank; ++i) {                            \
+        dims[i] = (npy_intp) shape[i];                          \
+    }                                                           \
+    PyObject* npy_x = PyArray_NewFromDescr(&PyArray_Type,       \
+        PyArray_DescrFromType(NPY_TYPE), rank, dims, NULL, x,   \
+        NPY_ARRAY_FARRAY, NULL);                          \
+    return PyDict_SetItemString(globals, name_py, npy_x);       \
 }
 
 
@@ -95,17 +100,17 @@ int send_bytes(char* x, char* name_py);
 int send_str(char* x, char* name_py);
 
 // Sends the given array to Python as a global numpy array, with the given name.
-int send_array_int8(int8_t x[], size_t n, char* name_py);
-int send_array_int16(int16_t x[], size_t n, char* name_py);
-int send_array_int32(int32_t x[], size_t n, char* name_py);
-int send_array_int64(int64_t x[], size_t n, char* name_py);
-// int send_array_uint8(uint8_t x[], size_t n, char* name_py);
-// int send_array_uint16(uint16_t x[], size_t n, char* name_py);
-// int send_array_uint32(uint32_t x[], size_t n, char* name_py);
-// int send_array_uint64(uint64_t x[], size_t n, char* name_py);
-int send_array_float(float x[], size_t n, char* name_py);
-int send_array_double(double x[], size_t n, char* name_py);
-int send_array_bool(bool x[], size_t n, char* name_py);
+int send_array_int8(int8_t x[], int64_t shape[], int rank, char* name_py);
+int send_array_int16(int16_t x[], int64_t shape[], int rank, char* name_py);
+int send_array_int32(int32_t x[], int64_t shape[], int rank, char* name_py);
+int send_array_int64(int64_t x[], int64_t shape[], int rank, char* name_py);
+// int send_array_uint8(uint8_t x[], int64_t shape[], int rank, char* name_py);
+// int send_array_uint16(uint16_t x[], int64_t shape[], int rank, char* name_py);
+// int send_array_uint32(uint32_t x[], int64_t shape[], int rank, char* name_py);
+// int send_array_uint64(uint64_t x[], int64_t shape[], int rank, char* name_py);
+int send_array_float(float x[], int64_t shape[], int rank, char* name_py);
+int send_array_double(double x[], int64_t shape[], int rank, char* name_py);
+int send_array_bool(bool x[], int64_t shape[], int rank, char* name_py);
 
 // Executes the given file.
 void run_file(char* path);

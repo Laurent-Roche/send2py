@@ -96,11 +96,13 @@ module send2py
     
     #: for c_type, f_type, f_kind in types
     interface
-        function send_array_${c_type}$(arr, n, name_py) &
+        function send_array_${c_type}$(arr_ptr, shape_, rank_, name_py) &
                             bind(c, name="send_array_${c_type}$") result(error)
-            use iso_c_binding, only: c_char, ${f_kind}$, c_size_t, c_int
-            ${f_type}$(${f_kind}$), intent(in) :: arr(n)
-            integer(c_size_t), intent(in), value :: n
+            use iso_c_binding, only: c_char, ${f_kind}$, c_size_t, c_int, &
+                                     c_int64_t, c_ptr
+            type(c_ptr), intent(in), value :: arr_ptr
+            integer(c_int64_t), intent(in) :: shape_(rank_)
+            integer(c_int), intent(in), value :: rank_
             character(c_char), intent(in) :: name_py(*)
             integer(c_int) :: error
         end function send_array_${c_type}$
@@ -202,14 +204,31 @@ contains
     ! send_array_xxx() wrappers to add array size in call and c_null_char.
     #: for c_type, f_type, f_kind in types
     subroutine send_array_${c_type}$_f(arr, name_py)
-        ${f_type}$(${f_kind}$), intent(in) :: arr(:)
+        ${f_type}$(${f_kind}$), target, intent(in), contiguous :: arr(..)
         character(len=*, kind=c_char), intent(in) :: name_py
         
-        integer(c_size_t) :: n
-        integer(c_int) :: error
-
-        n = size(arr)
-        error = send_array_${c_type}$(arr, n, append_end_of_string(name_py))
+        integer(c_int) :: rank_, error, i
+        integer(c_int64_t), allocatable :: shape_(:)
+        type(c_ptr) :: arr_ptr
+        
+        ! select rank to get the shape and pointer.
+        select rank (arr)
+        #: for r in range(1, 15)
+        rank (${r}$)
+            rank_ = ${r}$
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(#{for _ in range(1, r)}#1, #{endfor}#1))
+        #: endfor
+        rank default
+            stop "Rank too high to be passed to NumPy"
+        end select
+        ! Call and check error.
+        error = send_array_${c_type}$(arr_ptr, shape_, rank_, &
+                                      append_end_of_string(name_py))
+        deallocate(shape_)
         call check_error(error)
     end subroutine send_array_${c_type}$_f
     #: endfor

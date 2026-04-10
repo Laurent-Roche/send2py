@@ -150,71 +150,85 @@ module send2py
     end interface
     
     interface
-        function send_array_int8(arr, n, name_py) &
+        function send_array_int8(arr_ptr, shape_, rank_, name_py) &
                             bind(c, name="send_array_int8") result(error)
-            use iso_c_binding, only: c_char, c_int8_t, c_size_t, c_int
-            integer(c_int8_t), intent(in) :: arr(n)
-            integer(c_size_t), intent(in), value :: n
+            use iso_c_binding, only: c_char, c_int8_t, c_size_t, c_int, &
+                                     c_int64_t, c_ptr
+            type(c_ptr), intent(in), value :: arr_ptr
+            integer(c_int64_t), intent(in) :: shape_(rank_)
+            integer(c_int), intent(in), value :: rank_
             character(c_char), intent(in) :: name_py(*)
             integer(c_int) :: error
         end function send_array_int8
     end interface
     interface
-        function send_array_int16(arr, n, name_py) &
+        function send_array_int16(arr_ptr, shape_, rank_, name_py) &
                             bind(c, name="send_array_int16") result(error)
-            use iso_c_binding, only: c_char, c_int16_t, c_size_t, c_int
-            integer(c_int16_t), intent(in) :: arr(n)
-            integer(c_size_t), intent(in), value :: n
+            use iso_c_binding, only: c_char, c_int16_t, c_size_t, c_int, &
+                                     c_int64_t, c_ptr
+            type(c_ptr), intent(in), value :: arr_ptr
+            integer(c_int64_t), intent(in) :: shape_(rank_)
+            integer(c_int), intent(in), value :: rank_
             character(c_char), intent(in) :: name_py(*)
             integer(c_int) :: error
         end function send_array_int16
     end interface
     interface
-        function send_array_int32(arr, n, name_py) &
+        function send_array_int32(arr_ptr, shape_, rank_, name_py) &
                             bind(c, name="send_array_int32") result(error)
-            use iso_c_binding, only: c_char, c_int32_t, c_size_t, c_int
-            integer(c_int32_t), intent(in) :: arr(n)
-            integer(c_size_t), intent(in), value :: n
+            use iso_c_binding, only: c_char, c_int32_t, c_size_t, c_int, &
+                                     c_int64_t, c_ptr
+            type(c_ptr), intent(in), value :: arr_ptr
+            integer(c_int64_t), intent(in) :: shape_(rank_)
+            integer(c_int), intent(in), value :: rank_
             character(c_char), intent(in) :: name_py(*)
             integer(c_int) :: error
         end function send_array_int32
     end interface
     interface
-        function send_array_int64(arr, n, name_py) &
+        function send_array_int64(arr_ptr, shape_, rank_, name_py) &
                             bind(c, name="send_array_int64") result(error)
-            use iso_c_binding, only: c_char, c_int64_t, c_size_t, c_int
-            integer(c_int64_t), intent(in) :: arr(n)
-            integer(c_size_t), intent(in), value :: n
+            use iso_c_binding, only: c_char, c_int64_t, c_size_t, c_int, &
+                                     c_int64_t, c_ptr
+            type(c_ptr), intent(in), value :: arr_ptr
+            integer(c_int64_t), intent(in) :: shape_(rank_)
+            integer(c_int), intent(in), value :: rank_
             character(c_char), intent(in) :: name_py(*)
             integer(c_int) :: error
         end function send_array_int64
     end interface
     interface
-        function send_array_float(arr, n, name_py) &
+        function send_array_float(arr_ptr, shape_, rank_, name_py) &
                             bind(c, name="send_array_float") result(error)
-            use iso_c_binding, only: c_char, c_float, c_size_t, c_int
-            real(c_float), intent(in) :: arr(n)
-            integer(c_size_t), intent(in), value :: n
+            use iso_c_binding, only: c_char, c_float, c_size_t, c_int, &
+                                     c_int64_t, c_ptr
+            type(c_ptr), intent(in), value :: arr_ptr
+            integer(c_int64_t), intent(in) :: shape_(rank_)
+            integer(c_int), intent(in), value :: rank_
             character(c_char), intent(in) :: name_py(*)
             integer(c_int) :: error
         end function send_array_float
     end interface
     interface
-        function send_array_double(arr, n, name_py) &
+        function send_array_double(arr_ptr, shape_, rank_, name_py) &
                             bind(c, name="send_array_double") result(error)
-            use iso_c_binding, only: c_char, c_double, c_size_t, c_int
-            real(c_double), intent(in) :: arr(n)
-            integer(c_size_t), intent(in), value :: n
+            use iso_c_binding, only: c_char, c_double, c_size_t, c_int, &
+                                     c_int64_t, c_ptr
+            type(c_ptr), intent(in), value :: arr_ptr
+            integer(c_int64_t), intent(in) :: shape_(rank_)
+            integer(c_int), intent(in), value :: rank_
             character(c_char), intent(in) :: name_py(*)
             integer(c_int) :: error
         end function send_array_double
     end interface
     interface
-        function send_array_bool(arr, n, name_py) &
+        function send_array_bool(arr_ptr, shape_, rank_, name_py) &
                             bind(c, name="send_array_bool") result(error)
-            use iso_c_binding, only: c_char, c_bool, c_size_t, c_int
-            logical(c_bool), intent(in) :: arr(n)
-            integer(c_size_t), intent(in), value :: n
+            use iso_c_binding, only: c_char, c_bool, c_size_t, c_int, &
+                                     c_int64_t, c_ptr
+            type(c_ptr), intent(in), value :: arr_ptr
+            integer(c_int64_t), intent(in) :: shape_(rank_)
+            integer(c_int), intent(in), value :: rank_
             character(c_char), intent(in) :: name_py(*)
             integer(c_int) :: error
         end function send_array_bool
@@ -378,80 +392,822 @@ contains
 
     ! send_array_xxx() wrappers to add array size in call and c_null_char.
     subroutine send_array_int8_f(arr, name_py)
-        integer(c_int8_t), intent(in) :: arr(:)
+        integer(c_int8_t), target, intent(in), contiguous :: arr(..)
         character(len=*, kind=c_char), intent(in) :: name_py
         
-        integer(c_size_t) :: n
-        integer(c_int) :: error
-
-        n = size(arr)
-        error = send_array_int8(arr, n, append_end_of_string(name_py))
+        integer(c_int) :: rank_, error, i
+        integer(c_int64_t), allocatable :: shape_(:)
+        type(c_ptr) :: arr_ptr
+        
+        ! select rank to get the shape and pointer.
+        select rank (arr)
+        rank (1)
+            rank_ = 1
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1))
+        rank (2)
+            rank_ = 2
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1))
+        rank (3)
+            rank_ = 3
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1))
+        rank (4)
+            rank_ = 4
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1))
+        rank (5)
+            rank_ = 5
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1))
+        rank (6)
+            rank_ = 6
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1))
+        rank (7)
+            rank_ = 7
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1))
+        rank (8)
+            rank_ = 8
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1))
+        rank (9)
+            rank_ = 9
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (10)
+            rank_ = 10
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (11)
+            rank_ = 11
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (12)
+            rank_ = 12
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (13)
+            rank_ = 13
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (14)
+            rank_ = 14
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank default
+            stop "Rank too high to be passed to NumPy"
+        end select
+        ! Call and check error.
+        error = send_array_int8(arr_ptr, shape_, rank_, &
+                                      append_end_of_string(name_py))
+        deallocate(shape_)
         call check_error(error)
     end subroutine send_array_int8_f
     subroutine send_array_int16_f(arr, name_py)
-        integer(c_int16_t), intent(in) :: arr(:)
+        integer(c_int16_t), target, intent(in), contiguous :: arr(..)
         character(len=*, kind=c_char), intent(in) :: name_py
         
-        integer(c_size_t) :: n
-        integer(c_int) :: error
-
-        n = size(arr)
-        error = send_array_int16(arr, n, append_end_of_string(name_py))
+        integer(c_int) :: rank_, error, i
+        integer(c_int64_t), allocatable :: shape_(:)
+        type(c_ptr) :: arr_ptr
+        
+        ! select rank to get the shape and pointer.
+        select rank (arr)
+        rank (1)
+            rank_ = 1
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1))
+        rank (2)
+            rank_ = 2
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1))
+        rank (3)
+            rank_ = 3
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1))
+        rank (4)
+            rank_ = 4
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1))
+        rank (5)
+            rank_ = 5
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1))
+        rank (6)
+            rank_ = 6
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1))
+        rank (7)
+            rank_ = 7
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1))
+        rank (8)
+            rank_ = 8
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1))
+        rank (9)
+            rank_ = 9
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (10)
+            rank_ = 10
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (11)
+            rank_ = 11
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (12)
+            rank_ = 12
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (13)
+            rank_ = 13
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (14)
+            rank_ = 14
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank default
+            stop "Rank too high to be passed to NumPy"
+        end select
+        ! Call and check error.
+        error = send_array_int16(arr_ptr, shape_, rank_, &
+                                      append_end_of_string(name_py))
+        deallocate(shape_)
         call check_error(error)
     end subroutine send_array_int16_f
     subroutine send_array_int32_f(arr, name_py)
-        integer(c_int32_t), intent(in) :: arr(:)
+        integer(c_int32_t), target, intent(in), contiguous :: arr(..)
         character(len=*, kind=c_char), intent(in) :: name_py
         
-        integer(c_size_t) :: n
-        integer(c_int) :: error
-
-        n = size(arr)
-        error = send_array_int32(arr, n, append_end_of_string(name_py))
+        integer(c_int) :: rank_, error, i
+        integer(c_int64_t), allocatable :: shape_(:)
+        type(c_ptr) :: arr_ptr
+        
+        ! select rank to get the shape and pointer.
+        select rank (arr)
+        rank (1)
+            rank_ = 1
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1))
+        rank (2)
+            rank_ = 2
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1))
+        rank (3)
+            rank_ = 3
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1))
+        rank (4)
+            rank_ = 4
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1))
+        rank (5)
+            rank_ = 5
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1))
+        rank (6)
+            rank_ = 6
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1))
+        rank (7)
+            rank_ = 7
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1))
+        rank (8)
+            rank_ = 8
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1))
+        rank (9)
+            rank_ = 9
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (10)
+            rank_ = 10
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (11)
+            rank_ = 11
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (12)
+            rank_ = 12
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (13)
+            rank_ = 13
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (14)
+            rank_ = 14
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank default
+            stop "Rank too high to be passed to NumPy"
+        end select
+        ! Call and check error.
+        error = send_array_int32(arr_ptr, shape_, rank_, &
+                                      append_end_of_string(name_py))
+        deallocate(shape_)
         call check_error(error)
     end subroutine send_array_int32_f
     subroutine send_array_int64_f(arr, name_py)
-        integer(c_int64_t), intent(in) :: arr(:)
+        integer(c_int64_t), target, intent(in), contiguous :: arr(..)
         character(len=*, kind=c_char), intent(in) :: name_py
         
-        integer(c_size_t) :: n
-        integer(c_int) :: error
-
-        n = size(arr)
-        error = send_array_int64(arr, n, append_end_of_string(name_py))
+        integer(c_int) :: rank_, error, i
+        integer(c_int64_t), allocatable :: shape_(:)
+        type(c_ptr) :: arr_ptr
+        
+        ! select rank to get the shape and pointer.
+        select rank (arr)
+        rank (1)
+            rank_ = 1
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1))
+        rank (2)
+            rank_ = 2
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1))
+        rank (3)
+            rank_ = 3
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1))
+        rank (4)
+            rank_ = 4
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1))
+        rank (5)
+            rank_ = 5
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1))
+        rank (6)
+            rank_ = 6
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1))
+        rank (7)
+            rank_ = 7
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1))
+        rank (8)
+            rank_ = 8
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1))
+        rank (9)
+            rank_ = 9
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (10)
+            rank_ = 10
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (11)
+            rank_ = 11
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (12)
+            rank_ = 12
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (13)
+            rank_ = 13
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (14)
+            rank_ = 14
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank default
+            stop "Rank too high to be passed to NumPy"
+        end select
+        ! Call and check error.
+        error = send_array_int64(arr_ptr, shape_, rank_, &
+                                      append_end_of_string(name_py))
+        deallocate(shape_)
         call check_error(error)
     end subroutine send_array_int64_f
     subroutine send_array_float_f(arr, name_py)
-        real(c_float), intent(in) :: arr(:)
+        real(c_float), target, intent(in), contiguous :: arr(..)
         character(len=*, kind=c_char), intent(in) :: name_py
         
-        integer(c_size_t) :: n
-        integer(c_int) :: error
-
-        n = size(arr)
-        error = send_array_float(arr, n, append_end_of_string(name_py))
+        integer(c_int) :: rank_, error, i
+        integer(c_int64_t), allocatable :: shape_(:)
+        type(c_ptr) :: arr_ptr
+        
+        ! select rank to get the shape and pointer.
+        select rank (arr)
+        rank (1)
+            rank_ = 1
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1))
+        rank (2)
+            rank_ = 2
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1))
+        rank (3)
+            rank_ = 3
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1))
+        rank (4)
+            rank_ = 4
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1))
+        rank (5)
+            rank_ = 5
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1))
+        rank (6)
+            rank_ = 6
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1))
+        rank (7)
+            rank_ = 7
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1))
+        rank (8)
+            rank_ = 8
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1))
+        rank (9)
+            rank_ = 9
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (10)
+            rank_ = 10
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (11)
+            rank_ = 11
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (12)
+            rank_ = 12
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (13)
+            rank_ = 13
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (14)
+            rank_ = 14
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank default
+            stop "Rank too high to be passed to NumPy"
+        end select
+        ! Call and check error.
+        error = send_array_float(arr_ptr, shape_, rank_, &
+                                      append_end_of_string(name_py))
+        deallocate(shape_)
         call check_error(error)
     end subroutine send_array_float_f
     subroutine send_array_double_f(arr, name_py)
-        real(c_double), intent(in) :: arr(:)
+        real(c_double), target, intent(in), contiguous :: arr(..)
         character(len=*, kind=c_char), intent(in) :: name_py
         
-        integer(c_size_t) :: n
-        integer(c_int) :: error
-
-        n = size(arr)
-        error = send_array_double(arr, n, append_end_of_string(name_py))
+        integer(c_int) :: rank_, error, i
+        integer(c_int64_t), allocatable :: shape_(:)
+        type(c_ptr) :: arr_ptr
+        
+        ! select rank to get the shape and pointer.
+        select rank (arr)
+        rank (1)
+            rank_ = 1
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1))
+        rank (2)
+            rank_ = 2
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1))
+        rank (3)
+            rank_ = 3
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1))
+        rank (4)
+            rank_ = 4
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1))
+        rank (5)
+            rank_ = 5
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1))
+        rank (6)
+            rank_ = 6
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1))
+        rank (7)
+            rank_ = 7
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1))
+        rank (8)
+            rank_ = 8
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1))
+        rank (9)
+            rank_ = 9
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (10)
+            rank_ = 10
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (11)
+            rank_ = 11
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (12)
+            rank_ = 12
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (13)
+            rank_ = 13
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (14)
+            rank_ = 14
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank default
+            stop "Rank too high to be passed to NumPy"
+        end select
+        ! Call and check error.
+        error = send_array_double(arr_ptr, shape_, rank_, &
+                                      append_end_of_string(name_py))
+        deallocate(shape_)
         call check_error(error)
     end subroutine send_array_double_f
     subroutine send_array_bool_f(arr, name_py)
-        logical(c_bool), intent(in) :: arr(:)
+        logical(c_bool), target, intent(in), contiguous :: arr(..)
         character(len=*, kind=c_char), intent(in) :: name_py
         
-        integer(c_size_t) :: n
-        integer(c_int) :: error
-
-        n = size(arr)
-        error = send_array_bool(arr, n, append_end_of_string(name_py))
+        integer(c_int) :: rank_, error, i
+        integer(c_int64_t), allocatable :: shape_(:)
+        type(c_ptr) :: arr_ptr
+        
+        ! select rank to get the shape and pointer.
+        select rank (arr)
+        rank (1)
+            rank_ = 1
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1))
+        rank (2)
+            rank_ = 2
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1))
+        rank (3)
+            rank_ = 3
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1))
+        rank (4)
+            rank_ = 4
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1))
+        rank (5)
+            rank_ = 5
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1))
+        rank (6)
+            rank_ = 6
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1))
+        rank (7)
+            rank_ = 7
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1))
+        rank (8)
+            rank_ = 8
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1))
+        rank (9)
+            rank_ = 9
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (10)
+            rank_ = 10
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (11)
+            rank_ = 11
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (12)
+            rank_ = 12
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (13)
+            rank_ = 13
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank (14)
+            rank_ = 14
+            allocate(shape_(rank_))
+            do i = 1, rank_
+                shape_(i) = size(arr, i, kind=c_int64_t)
+            end do
+            arr_ptr = c_loc(arr(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        rank default
+            stop "Rank too high to be passed to NumPy"
+        end select
+        ! Call and check error.
+        error = send_array_bool(arr_ptr, shape_, rank_, &
+                                      append_end_of_string(name_py))
+        deallocate(shape_)
         call check_error(error)
     end subroutine send_array_bool_f
     
